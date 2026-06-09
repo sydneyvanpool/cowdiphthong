@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diphthong Barnyard Safari</title>
+    <!-- Google Fonts for Accessibility and Readability -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Lexend:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-main: #FFFDF6;
+            --text-color: #2D3748;
+            --correct-green: #4CAF50;
+            --sky-blue: #2196F3;
+            --sunny-yellow: #FFC107;
+            --barn-coral: #FF5722;
+            --button-hover: #E2E8F0;
+            --block-bg: #EDF2F7;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Lexend', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Top Bar Layout */
+        .top-bar {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            min-height: 50px;
+        }
+
+        .home-btn {
+            background-color: var(--sky-blue);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .home-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Audio Helper Button */
+        .audio-btn {
+            background-color: #9C27B0;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Dashboard Metrics */
+        .metrics-panel {
+            display: flex;
+            gap: 15px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.2rem;
+            background-color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        /* App Window Frame */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 30px;
+            padding: 35px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+            border: 4px solid #E2E8F0;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        h1 { color: var(--barn-coral); font-size: 2.5rem; }
+        h2 { color: var(--sky-blue); font-size: 2rem; }
+
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #4A5568;
+        }
+
+        /* Mode Selection Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .menu-grid { grid-template-columns: 1fr; }
+        }
+
+        .menu-card {
+            background: #F7FAFC;
+            border: 3px solid #E2E8F0;
+            border-radius: 20px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--sky-blue);
+            background-color: #EDF2F7;
+        }
+
+        .menu-card h3 { color: var(--text-color); margin-bottom: 10px; font-size: 1.5rem; }
+
+        /* Level Selector Switch */
+        .level-select {
+            margin: 25px 0;
+            background: #EDF2F7;
+            padding: 10px;
+            border-radius: 30px;
+            display: inline-flex;
+            gap: 10px;
+        }
+
+        .lvl-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            background: transparent;
+            transition: all 0.2s;
+        }
+
+        .lvl-btn.active {
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            color: var(--sky-blue);
+        }
+
+        /* Screen States */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Phonics Visual Blocks Layout */
+        .word-building-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 40px 0;
+        }
+
+        .phonics-block {
+            background-color: var(--block-bg);
+            border: 3px solid #CBD5E0;
+            border-radius: 12px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            width: 75px;
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: lowercase;
+        }
+
+        .phonics-block.target-blank {
+            border: 3px dashed var(--sky-blue);
+            background-color: #EBF8FF;
+            color: var(--sky-blue);
+            width: 100px;
+        }
+
+        /* Input Choices Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .choice-btn {
+            background: white;
+            border: 3px solid #CBD5E0;
+            border-radius: 18px;
+            padding: 20px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .choice-btn:hover {
+            border-color: var(--sky-blue);
+            background-color: #F7FAFC;
+            transform: scale(1.02);
+        }
+
+        /* Feedback UI Overlays */
+        .feedback-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            display: none;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .feedback-box.correct {
+            background-color: #E6FFFA;
+            border: 3px solid var(--correct-green);
+            color: #234E52;
+            display: block;
+        }
+
+        .feedback-box.incorrect {
+            background-color: #FFF5F5;
+            border: 3px solid var(--barn-coral);
+            color: #742A2A;
+            display: block;
+        }
+
+        .action-btn {
+            background-color: var(--correct-green);
+            color: white;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.4rem;
+            border: none;
+            border-radius: 25px;
+            padding: 15px 40px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Progress Bar Setup */
+        .progress-container {
+            width: 100%;
+            background-color: #EDF2F7;
+            border-radius: 10px;
+            height: 15px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--sunny-yellow);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Sticker Album Area */
+        .sticker-album {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            min-height: 60px;
+            background: #F7FAFC;
+            padding: 10px;
+            border-radius: 15px;
+        }
+
+        .sticker {
+            font-size: 2rem;
+            animation: burst 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes burst {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        /* Game Scene Graphic elements */
+        .game-track {
+            background: #E2F9E3;
+            border: 3px solid #C6F6D5;
+            height: 150px;
+            border-radius: 20px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cow-sprite {
+            font-size: 3.5rem;
+            position: absolute;
+            bottom: 25px;
+            left: 5%;
+            transition: left 0.5s ease;
+        }
+
+        .pasture-goal {
+            font-size: 3.5rem;
+            position: absolute;
+            bottom: 25px;
+            right: 5%;
+        }
+
+        /* Reading Comprehension Layout */
+        .passage-box {
+            background-color: #F7FAFC;
+            border-left: 6px solid var(--sky-blue);
+            padding: 25px;
+            border-radius: 0 15px 15px 0;
+            font-size: 1.4rem;
+            line-height: 1.8;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .highlight-diph {
+            background-color: #FEFCBF;
+            padding: 0 4px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        /* Review List Container */
+        .review-list {
+            text-align: left;
+            margin: 20px 0;
+        }
+        .review-item {
+            padding: 12px;
+            border-bottom: 1px solid #E2E8F0;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Global Top Header Navigation -->
+    <div class="top-bar">
+        <button class="home-btn" id="globalHomeBtn" onclick="returnToHome()">🏠 Home</button>
+        
+        <div class="metrics-panel">
+            <span>⭐ Score: <span id="uiScore">0</span></span>
+            <button class="audio-btn" onclick="speakCurrentContext()" title="Read text out loud" aria-label="Speak Text">🔊</button>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <!-- ================= HOME SCREEN ================= -->
+        <div id="screenHome" class="screen active">
+            <h1>Diphthong Barnyard Safari!</h1>
+            <p class="subtitle">Let's practice our blending vowel sounds together!</p>
+            
+            <div class="level-select">
+                <button id="btnLvl1" class="lvl-btn active" onclick="setLevel(1)">Level 1: Warm-Up</button>
+                <button id="btnLvl2" class="lvl-btn" onclick="setLevel(2)">Level 2: Challenge</button>
+            </div>
+
+            <div class="menu-grid">
+                <div class="menu-card" onclick="startMode('practice')">
+                    <h3>PRACTICE MODE</h3>
+                    <p>Get instant friendly help and corrections after every sound puzzle!</p>
+                </div>
+                <div class="menu-card" onclick="startMode('quiz')">
+                    <h3>QUIZ MODE</h3>
+                    <p>Test your skills! Answer all puzzles first, then review your scores.</p>
+                </div>
+                <div class="menu-card" onclick="startMode('game')">
+                    <h3>COW GAME MODE</h3>
+                    <p>Help Bessie the cow find her way across the pasture to the delicious grass!</p>
+                </div>
+                <div class="menu-card" onclick="startMode('interactive')">
+                    <h3>STORY TIME</h3>
+                    <p>Read a mini-adventure and unlock branching choice pathways!</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px; font-size: 1.2rem; color: #718096;">My Barnyard Sticker Collection:</h3>
+            <div id="homeStickers" class="sticker-album"></div>
+        </div>
+
+        <!-- ================= STANDARD PRACTICE & QUIZ RUNNER SCREEN ================= -->
+        <div id="screenRunner" class="screen">
+            <div class="progress-container">
+                <div id="runnerProgress" class="progress-bar"></div>
+            </div>
+            <h2 id="runnerTitle">Practice Mode</h2>
+            <p id="runnerInstructions" class="subtitle">Complete the word below:</p>
+
+            <!-- Interactive Phonics Block Structures -->
+            <div id="phonicsBlockArea" class="word-building-area"></div>
+
+            <div id="optionsContainer" class="options-grid"></div>
+
+            <div id="runnerFeedback" class="feedback-box"></div>
+            <button id="runnerActionBtn" class="action-btn" onclick="handleRunnerAction()">Next</button>
+        </div>
+
+        <!-- ================= COW GAME MODE SCREEN ================= -->
+        <div id="screenGame" class="screen">
+            <h2>Moo-ve the Cow!</h2>
+            <p id="gameInstructions" class="subtitle">Match the vowel sounds to help Bessie walk!</p>
+
+            <div class="game-track">
+                <div id="cowActor" class="cow-sprite">🐄</div>
+                <div class="pasture-goal">🏡</div>
+            </div>
+
+            <div style="font-size: 1.5rem; margin: 20px 0; font-weight: bold;" id="gamePromptText"></div>
+            <div id="gameOptionsContainer" class="options-grid"></div>
+            
+            <div id="gameFeedback" class="feedback-box"></div>
+            <button id="gameActionBtn" class="action-btn" onclick="handleGameAction()">Advance</button>
+        </div>
+
+        <!-- ================= INTERACTIVE BRANCHING STORY SCREEN ================= -->
+        <div id="screenInteractive" class="screen">
+            <h2>Barnyard Story Adventures</h2>
+            <p class="subtitle">Read the text carefully and tap your path choice!</p>
+
+            <div id="passageDisplay" class="passage-box"></div>
+            <div id="branchOptions" class="options-grid"></div>
+
+            <div id="storyFeedback" class="feedback-box"></div>
+            <button id="storyActionBtn" class="action-btn" onclick="handleStoryAction()">Continue Adventure</button>
+        </div>
+
+        <!-- ================= REPORT / SCORE VIEW SCREEN ================= -->
+        <div id="screenReport" class="screen">
+            <h2>Splendid Effort!</h2>
+            <div id="reportScoreSummary" style="font-size: 1.8rem; margin: 20px 0; font-family: 'Fredoka';"></div>
+            
+            <div id="stickerRewardArea" style="display:none; margin: 20px 0;">
+                <h3>🎉 You unlocked a bonus sticker!</h3>
+                <div id="newStickerView" style="font-size: 4rem; margin: 10px 0;"></div>
+            </div>
+
+            <div id="reviewSection" class="review-list"></div>
+
+            <button class="action-btn" onclick="returnToHome()">Play Another Mode</button>
+        </div>
+
+    </div>
+
+    <script>
+        /* ================= APP CORE DATABASE STATE ================= */
+        let currentLevel = 1;
+        let currentMode = 'practice'; // practice, quiz, game, interactive
+        let globalScore = 0;
+        let collectedStickers = [];
+        
+        const STICKER_POOL = ['🐄', '🐖', '🐓', '🚜', '👩‍🌾', '🐴', '🐑', '🦆', '🌽', '🌻'];
+
+        // Curated, state-standard custom question repositories
+        const questionsLevel1 = [
+            { textBefore: "c", textAfter: "n", correct: "oi", choices: ["oi", "oy", "ou", "ow"], help: "We use 'oi' in the middle of words like coin to make the /oi/ sound!", hint: "A shiny round silver object used to buy things." },
+            { textBefore: "b", textAfter: "rn", correct: "ow", choices: ["ow", "oi", "oy", "ou"], help: "The color brown uses 'ow' to build its /ou/ sound blending phase!", hint: "A field color, like mud or a tree trunk." },
+            { textBefore: "t", textAfter: "", correct: "oy", choices: ["oy", "oi", "ou", "ow"], help: "When the /oi/ sound sits at the very end of a root word, we spell it with 'oy'!", hint: "Something fun you play with outside or in your room." },
+            { textBefore: "h", textAfter: "se", correct: "ou", choices: ["ou", "ow", "oi", "oy"], help: "House uses the 'ou' spelling chunk in the middle to sound out /ou/!", hint: "A place where people live safely together." },
+            { textBefore: "", textAfter: "nk", correct: "oi", choices: ["oi", "oy", "ou", "ow"], help: "The sound a cute farm pig makes starts with the 'oi' blend block!", hint: "The noisy sound made by our pink pig friends." }
+        ];
+
+        const questionsLevel2 = [
+            { textBefore: "c", textAfter: "boy", correct: "ow", choices: ["ow", "ou", "oy", "oi"], help: "Cowboy blends two syllables! The first half uses 'ow' for the /ou/ sound.", hint: "A ranch worker who rides horses and minds cows." },
+            { textBefore: "l", textAfter: "d", correct: "ou", choices: ["ou", "ow", "oi", "oy"], help: "Loud uses 'ou' inside the word trunk to make a huge noise sound!", hint: "Making a big sound, opposite of soft or quiet." },
+            { textBefore: "s", textAfter: "l", correct: "oi", choices: ["oi", "oy", "ou", "ow"], help: "Soil uses 'oi' in the middle of a syllable block to make the dirt sound!", hint: "The rich dirt where seeds grow into plants." },
+            { textBefore: "en", textAfter: "j", correct: "oy", choices: ["oy", "oi", "ow", "ou"], help: "Enjoy ends its syllable run using 'oy' for the outer vowel blend!", hint: "Another word that means to like something or have fun." },
+            { textBefore: "sh", textAfter: "t", correct: "ou", choices: ["ou", "ow", "oi", "oy"], help: "Shout is built with 'ou' right in the middle to project your big voice!", hint: "To speak or yell very loudly to get attention." }
+        ];
+
+        const gameQuestions = [
+            { prompt: "Find the word with the same sound as TOY:", correct: "Soil", choices: ["Soil", "Town", "House", "Cow"], help: "Toy and Soil share the identical /oi/ sound shift!" },
+            { prompt: "Find the word with the same sound as COW:", correct: "Sprout", choices: ["Sprout", "Boil", "Oink", "Boy"], help: "Cow and Sprout share the roaring /ou/ diphthong pattern!" },
+            { prompt: "Find the word with the same sound as COIN:", correct: "Enjoy", choices: ["Enjoy", "Brown", "Plow", "Out"], help: "Coin and Enjoy both belong to the bouncing /oi/ group!" }
+        ];
+
+        // Tree structure for the interactive text
+        const storyData = {
+            start: {
+                text: "Clown the Cow lived in a warm <span class='highlight-diph'>brown</span> barn. One day, he found a shiny silver <span class='highlight-diph'>coin</span> resting gently in the wet <span class='highlight-diph'>soil</span>. 'What a grand <span class='highlight-diph'>joy</span>!' shouted Clown.",
+                question: "What did Clown the Cow discover in the farm dirt?",
+                choices: [
+                    { text: "A bright silver coin", target: "found_coin", correct: true },
+                    { text: "A massive old house", target: "wrong_house", correct: false }
+                ]
+            },
+            wrong_house: {
+                text: "Clown looked around, but he did not see an old house! He looked back down into the soft <span class='highlight-diph'>soil</span> where the small object was glittering.",
+                question: "Let's read again! What did Clown find?",
+                choices: [
+                    { text: "A shiny silver coin", target: "found_coin", correct: true }
+                ]
+            },
+            found_coin: {
+                text: "Clown picked up the <span class='highlight-diph'>coin</span>. Suddenly, a little pig let out a happy <span class='highlight-diph'>oink</span>! 'Did you find my treasure?' asked the pig. Clown wanted to do the right thing.",
+                question: "What should Clown do with the coin?",
+                choices: [
+                    { text: "Give it back to the pig", target: "end_kind", correct: true },
+                    { text: "Keep it to buy a toy", target: "end_greedy", correct: false }
+                ]
+            },
+            end_greedy: {
+                text: "Clown walked away to look for a <span class='highlight-diph'>toy</span>, but his heart felt very heavy. He turned around to make things right with his friend.",
+                question: "Ready to fix the choice?",
+                choices: [
+                    { text: "Give the coin to the pig", target: "end_kind", correct: true }
+                ]
+            },
+            end_kind: {
+                text: "The little pig did a happy dance in the <span class='highlight-diph'>brown</span> yard! To celebrate, they shared a cold drink and played together all afternoon. What a spectacular day!",
+                question: "You completed the adventure!",
+                choices: [
+                    { text: "Finish Story Mode", target: "FINISH", correct: true }
+                ]
+            }
+        };
+
+        /* ================= RUNTIME STATE DRIVERS ================= */
+        let activeQuestionIndex = 0;
+        let activeQuestionsList = [];
+        let quizSelectedAnswers = []; 
+        let currentStoryNode = "start";
+
+        function setLevel(lvl) {
+            currentLevel = lvl;
+            document.getElementById('btnLvl1').classList.toggle('active', lvl === 1);
+            document.getElementById('btnLvl2').classList.toggle('active', lvl === 2);
+        }
+
+        function returnToHome() {
+            // Cancel any ongoing text reading
+            window.speechSynthesis.cancel();
+            
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screenHome').classList.add('active');
+            renderStickersDisplay('homeStickers');
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('uiScore').innerText = globalScore;
+        }
+
+        function renderStickersDisplay(elementId) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = "";
+            if(collectedStickers.length === 0) {
+                container.innerHTML = "<span style='color:#A0AEC0; font-size:1rem;'>No stickers earned yet. Keep trying!</span>";
+                return;
+            }
+            collectedStickers.forEach(stk => {
+                let sSpan = document.createElement('span');
+                sSpan.className = "sticker";
+                sSpan.innerText = stk;
+                container.appendChild(sSpan);
+            });
+        }
+
+        function awardRandomSticker() {
+            let item = STICKER_POOL[Math.floor(Math.random() * STICKER_POOL.length)];
+            collectedStickers.push(item);
+            return item;
+        }
+
+        /* ================= OFFLINE AUDIO TTS ENGINES ================= */
+        function speakText(textToRead) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Clear queue
+                // Strip HTML tags if any passed in text
+                let cleanText = textToRead.replace(/<\/?[^>]+(>|$)/g, "");
+                let utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.rate = 0.85; // Natural speed for developing readers
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function speakCurrentContext() {
+            let combinedText = "";
+            if (document.getElementById('screenHome').classList.contains('active')) {
+                combinedText = "Welcome to Diphthong Barnyard Safari! Choose a game mode below to begin.";
+            } else if (document.getElementById('screenRunner').classList.contains('active')) {
+                let q = activeQuestionsList[activeQuestionIndex];
+                combinedText = "Help me build the word. Hint: " + q.hint + ". Choose the missing sound.";
+                let fb = document.getElementById('runnerFeedback');
+                if(fb.style.display === "block") { combinedText += ". " + fb.innerText; }
+            } else if (document.getElementById('screenGame').classList.contains('active')) {
+                combinedText = document.getElementById('gamePromptText').innerText;
+                let gfb = document.getElementById('gameFeedback');
+                if(gfb.style.display === "block") { combinedText += ". " + gfb.innerText; }
+            } else if (document.getElementById('screenInteractive').classList.contains('active')) {
+                combinedText = document.getElementById('passageDisplay').innerText + " " + storyData[currentStoryNode].question;
+            }
+            speakText(combinedText);
+        }
+
+        /* ================= MODE SELECTION SETUP ================= */
+        function startMode(mode) {
+            currentMode = mode;
+            activeQuestionIndex = 0;
+            quizSelectedAnswers = [];
+            window.speechSynthesis.cancel();
+            
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            
+            let sourcePool = (currentLevel === 1) ? questionsLevel1 : questionsLevel2;
+            // Create a randomized shallow copy
+            activeQuestionsList = [...sourcePool].sort(() => 0.5 - Math.random());
+
+            if(mode === 'practice' || mode === 'quiz') {
+                document.getElementById('screenRunner').classList.add('active');
+                document.getElementById('runnerTitle').innerText = (mode === 'practice') ? "Practice Playground" : "Super Vowel Quiz";
+                loadRunnerQuestion();
+            } else if(mode === 'game') {
+                document.getElementById('screenGame').classList.add('active');
+                activeQuestionsList = [...gameQuestions];
+                document.getElementById('cowActor').style.left = "5%";
+                loadGameQuestion();
+            } else if(mode === 'interactive') {
+                document.getElementById('screenInteractive').classList.add('active');
+                currentStoryNode = "start";
+                loadStoryNode();
+            }
+        }
+
+        /* ================= RUNNER FLOWS (PRACTICE & QUIZ) ================= */
+        let runnerStateHasAnswered = false;
+        let selectedOptionText = "";
+
+        function loadRunnerQuestion() {
+            runnerStateHasAnswered = false;
+            let q = activeQuestionsList[activeQuestionIndex];
+            
+            // Build progress indicator metric
+            let percentage = (activeQuestionIndex / activeQuestionsList.length) * 100;
+            document.getElementById('runnerProgress').style.width = percentage + "%";
+            
+            document.getElementById('runnerFeedback').style.display = "none";
+            document.getElementById('runnerFeedback').className = "feedback-box";
+            document.getElementById('runnerActionBtn').innerText = (currentMode === 'practice') ? "Check Sound" : "Lock In Answer";
+
+            // Draw Visual Phonics Blocks
+            let blockContainer = document.getElementById('phonicsBlockArea');
+            blockContainer.innerHTML = "";
+
+            if(q.textBefore) {
+                let b = document.createElement('div'); b.className = "phonics-block"; b.innerText = q.textBefore;
+                blockContainer.appendChild(b);
+            }
+            
+            let blank = document.createElement('div'); 
+            blank.className = "phonics-block target-blank"; 
+            blank.id = "targetBlankBlock";
+            blank.innerText = "?";
+            blockContainer.appendChild(blank);
+
+            if(q.textAfter) {
+                let a = document.createElement('div'); a.className = "phonics-block"; a.innerText = q.textAfter;
+                blockContainer.appendChild(a);
+            }
+
+            // Draw selection layout buttons
+            let optContainer = document.getElementById('optionsContainer');
+            optContainer.innerHTML = "";
+            q.choices.forEach(choice => {
+                let btn = document.createElement('button');
+                btn.className = "choice-btn";
+                btn.innerText = choice;
+                btn.onclick = () => selectRunnerOption(choice, btn);
+                optContainer.appendChild(btn);
+            });
+            
+            // Auto-speak challenge context instantly
+            setTimeout(speakCurrentContext, 300);
+        }
+
+        function selectRunnerOption(choice, btnElement) {
+            if(runnerStateHasAnswered && currentMode === 'practice') return;
+            selectedOptionText = choice;
+            document.getElementById('targetBlankBlock').innerText = choice;
+            
+            // Highlight selected button frame visually
+            document.querySelectorAll('#optionsContainer .choice-btn').forEach(b => b.style.borderColor = '#CBD5E0');
+            btnElement.style.borderColor = varColor('--sky-blue');
+        }
+
+        function varColor(varName) {
+            return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+        }
+
+        function handleRunnerAction() {
+            if(!selectedOptionText) {
+                speakText("Please pick an answer block first!");
+                return;
+            }
+
+            let q = activeQuestionsList[activeQuestionIndex];
+
+            if(currentMode === 'practice') {
+                if(!runnerStateHasAnswered) {
+                    // Check logic stage
+                    runnerStateHasAnswered = true;
+                    let isCorrect = (selectedOptionText === q.correct);
+                    let fb = document.getElementById('runnerFeedback');
+                    
+                    if(isCorrect) {
+                        globalScore += 10;
+                        updateScoreDisplay();
+                        fb.className = "feedback-box correct";
+                        fb.innerText = "⭐ Tremendous! " + q.help;
+                    } else {
+                        fb.className = "feedback-box incorrect";
+                        fb.innerText = "Nice try! The correct block is '" + q.correct + "'. " + q.help;
+                    }
+                    document.getElementById('runnerActionBtn').innerText = "Next Question";
+                    speakCurrentContext();
+                } else {
+                    // Advance screen index logic
+                    selectedOptionText = "";
+                    activeQuestionIndex++;
+                    if(activeQuestionIndex < activeQuestionsList.length) {
+                        loadRunnerQuestion();
+                    } else {
+                        showReportScreen();
+                    }
+                }
+            } else {
+                // Quiz mode tracking metrics execution
+                quizSelectedAnswers.push({
+                    questionText: (q.textBefore || "") + " __ " + (q.textAfter || ""),
+                    chosen: selectedOptionText,
+                    correct: q.correct,
+                    isRight: (selectedOptionText === q.correct)
+                });
+                if(selectedOptionText === q.correct) {
+                    globalScore += 10;
+                    updateScoreDisplay();
+                }
+                selectedOptionText = "";
+                activeQuestionIndex++;
+                if(activeQuestionIndex < activeQuestionsList.length) {
+                    loadRunnerQuestion();
+                } else {
+                    showReportScreen();
+                }
+            }
+        }
+
+        /* ================= GAME MODE SYSTEMS ================= */
+        let gameStateHasAnswered = false;
+
+        function loadGameQuestion() {
+            gameStateHasAnswered = false;
+            let q = activeQuestionsList[activeQuestionIndex];
+            
+            document.getElementById('gameFeedback').style.display = "none";
+            document.getElementById('gameActionBtn').innerText = "Check Match";
+            document.getElementById('gamePromptText').innerText = q.prompt;
+
+            let optContainer = document.getElementById('gameOptionsContainer');
+            optContainer.innerHTML = "";
+            
+            q.choices.forEach(choice => {
+                let btn = document.createElement('button');
+                btn.className = "choice-btn";
+                btn.innerText = choice;
+                btn.onclick = () => {
+                    if(gameStateHasAnswered) return;
+                    selectedOptionText = choice;
+                    document.querySelectorAll('#gameOptionsContainer .choice-btn').forEach(b => b.style.borderColor = '#CBD5E0');
+                    btn.style.borderColor = varColor('--sky-blue');
+                };
+                optContainer.appendChild(btn);
+            });
+            setTimeout(speakCurrentContext, 300);
+        }
+
+        function handleGameAction() {
+            if(!selectedOptionText) {
+                speakText("Tap a farm word choice block first!");
+                return;
+            }
+            let q = activeQuestionsList[activeQuestionIndex];
+
+            if(!gameStateHasAnswered) {
+                gameStateHasAnswered = true;
+                let isCorrect = (selectedOptionText === q.correct);
+                let fb = document.getElementById('gameFeedback');
+
+                if(isCorrect) {
+                    globalScore += 10;
+                    updateScoreDisplay();
+                    fb.className = "feedback-box correct";
+                    fb.innerText = "🐄 Mooo-ve forward! Spectacular! " + q.help;
+                    
+                    // Move the cow canvas avatar step markers forward incrementally
+                    let step = ((activeQuestionIndex + 1) / activeQuestionsList.length) * 70 + 5;
+                    document.getElementById('cowActor').style.left = step + "%";
+                } else {
+                    fb.className = "feedback-box incorrect";
+                    fb.innerText = "Bessie is still thinking! The target match word was " + q.correct + ". " + q.help;
+                }
+                document.getElementById('gameActionBtn').innerText = "Keep Moving";
+                speakCurrentContext();
+            } else {
+                selectedOptionText = "";
+                activeQuestionIndex++;
+                if(activeQuestionIndex < activeQuestionsList.length) {
+                    loadGameQuestion();
+                } else {
+                    showReportScreen();
+                }
+            }
+        }
+
+        /* ================= STORIES IMPLEMENTATION ================= */
+        let storySelectedChoice = null;
+        let storyStateAnswered = false;
+
+        function loadStoryNode() {
+            storyStateAnswered = false;
+            storySelectedChoice = null;
+            let node = storyData[currentStoryNode];
+
+            document.getElementById('passageDisplay').innerHTML = node.text;
+            document.getElementById('storyFeedback').style.display = "none";
+            document.getElementById('storyActionBtn').innerText = "Choose Path";
+
+            let optionsBox = document.getElementById('branchOptions');
+            optionsBox.innerHTML = "";
+
+            node.choices.forEach(ch => {
+                let btn = document.createElement('button');
+                btn.className = "choice-btn";
+                btn.style.fontSize = "1.2rem";
+                btn.innerText = ch.text;
+                btn.onclick = () => {
+                    if(storyStateAnswered) return;
+                    storySelectedChoice = ch;
+                    document.querySelectorAll('#branchOptions .choice-btn').forEach(b => b.style.borderColor = '#CBD5E0');
+                    btn.style.borderColor = varColor('--sky-blue');
+                };
+                optionsBox.appendChild(btn);
+            });
+            setTimeout(speakCurrentContext, 300);
+        }
+
+        function handleStoryAction() {
+            if(!storySelectedChoice) {
+                speakText("Please pick an action path choice!");
+                return;
+            }
+
+            let fb = document.getElementById('storyFeedback');
+
+            if(!storyStateAnswered) {
+                storyStateAnswered = true;
+                if(storySelectedChoice.correct) {
+                    globalScore += 10;
+                    updateScoreDisplay();
+                    fb.className = "feedback-box correct";
+                    fb.innerText = "☀️ Wonderful choice! That moves our story forward wonderfully.";
+                } else {
+                    fb.className = "feedback-box incorrect";
+                    fb.innerText = "Oh! That branch leads to a dead end. Let's try alternative paths!";
+                }
+                document.getElementById('storyActionBtn').innerText = "Advance Story";
+                speakText(fb.innerText);
+            } else {
+                if(storySelectedChoice.target === "FINISH") {
+                    showReportScreen();
+                } else {
+                    currentStoryNode = storySelectedChoice.target;
+                    loadStoryNode();
+                }
+            }
+        }
+
+        /* ================= SCORE REPORTS PAGE METRICS ================= */
+        function showReportScreen() {
+            window.speechSynthesis.cancel();
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screenReport').classList.add('active');
+
+            let summary = document.getElementById('reportScoreSummary');
+            let stickerArea = document.getElementById('stickerRewardArea');
+            let reviewSec = document.getElementById('reviewSection');
+
+            reviewSec.innerHTML = "";
+            stickerArea.style.display = "none";
+
+            if(currentMode === 'quiz') {
+                summary.innerText = "Quiz Completed! Let's verify our final scores:";
+                let missCount = 0;
+                
+                quizSelectedAnswers.forEach(ans => {
+                    let div = document.createElement('div');
+                    div.className = "review-item";
+                    if(ans.isRight) {
+                        div.innerHTML = "✅ Word Puzzle <b>" + ans.questionText + "</b>: You locked in '" + ans.chosen + "' (Correct!)";
+                        div.style.color = varColor('--correct-green');
+                    } else {
+                        missCount++;
+                        div.innerHTML = "❌ Word Puzzle <b>" + ans.questionText + "</b>: You guessed '" + ans.chosen + "', but the proper blend chunk is <b>" + ans.correct + "</b>";
+                        div.style.color = varColor('--barn-coral');
+                    }
+                    reviewSec.appendChild(div);
+                });
+
+                if(missCount === 0) {
+                    let st = awardRandomSticker();
+                    stickerArea.style.display = "block";
+                    document.getElementById('newStickerView').innerText = st;
+                    speakText("Perfect score! You earned a special new animal sticker for your album!");
+                } else {
+                    speakText("Terrific job completing the quiz! Review any incorrect words below to keep learning.");
+                }
+            } else {
+                // Practice, Game, or Story mode standard final summary reward drops
+                summary.innerText = "Fantastic! You successfully finished " + currentMode + " mode!";
+                let st = awardRandomSticker();
+                stickerArea.style.display = "block";
+                document.getElementById('newStickerView').innerText = st;
+                speakText("Sensational work! You earned a brand new animal sticker for your virtual barnyard album!");
+            }
+            updateScoreDisplay();
+        }
+
+        // Initialize empty album array messages safely
+        renderStickersDisplay('homeStickers');
+    </script>
+</body>
+</html>
